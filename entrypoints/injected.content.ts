@@ -37,18 +37,15 @@ export default defineContentScript({
         if (emails.length === 0) {
           const response = await originalFetch.call(window, pending.url, pending.init);
           pending.resolve(response);
-          pendingRequests.delete(requestId);
         } else {
-          // TODO: Show modal and wait for user decision
-          alert(`[PromptGuard] Emails detected:\n${emails.join("\n")}\n\nThese will be anonymized.`);
-
           const response = await originalFetch.call(window, pending.url, {
             ...pending.init,
             body: anonymizedBody,
           });
           pending.resolve(response);
-          pendingRequests.delete(requestId);
         }
+
+        pendingRequests.delete(requestId);
       }
     });
 
@@ -74,8 +71,13 @@ export default defineContentScript({
         bodyText = body;
       } else if (body instanceof Blob) {
         bodyText = await body.text();
-      } else {
+      } else if (body instanceof ArrayBuffer || ArrayBuffer.isView(body)) {
         bodyText = await new Blob([body]).text();
+      } else if (body instanceof FormData || body instanceof URLSearchParams) {
+        bodyText = body.toString();
+      } else {
+        // ReadableStream - skip scanning
+        return originalFetch.call(window, input, init);
       }
 
       const requestId = crypto.randomUUID();

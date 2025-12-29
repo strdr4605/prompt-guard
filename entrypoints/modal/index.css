@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lasso-gold: #f5b800;
+  --color-lasso-gold-hover: #e0a800;
+  --color-lasso-brown: #8b1e3f;
+  --color-lasso-orange: #e85d24;
+  --color-lasso-cream: #fff8f0;
+  --color-lasso-tan: #d4a84b;
+}

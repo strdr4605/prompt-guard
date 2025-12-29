@@ -40,7 +40,7 @@ export default defineBackground(() => {
       // TODO: Store detection in browser.storage
 
       sendResponse({ requestId, emails, anonymizedBody });
-      return true; // Keep channel open for sendResponse
+      return true; // Keep message channel open for async sendResponse
     }
     return false;
   });

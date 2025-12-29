@@ -15,16 +15,26 @@
     "postinstall": "wxt prepare",
     "lint": "oxlint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "oxlint"
+    ],
+    "*.{json,md,css}": "prettier --write"
+  },
   "devDependencies": {
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@wxt-dev/module-react": "^1.1.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "oxlint": "^1.36.0",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",

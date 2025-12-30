@@ -10,7 +10,7 @@ export default defineContentScript({
     const CHATGPT_API_PATTERNS = [
       /chat\.openai\.com\/backend-api\/conversation/,
       /chatgpt\.com\/backend-api\/conversation/,
-      /chatgpt\.com\/backend-anon\/.*\/conversation/,
+      /chatgpt\.com\/backend-anon\/.*conversation$/,
     ];
 
     const originalFetch = window.fetch;

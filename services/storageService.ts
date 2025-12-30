@@ -1,4 +1,4 @@
-import type { Issue, DetectedEmail } from "../entrypoints/modal/types";
+import type { DetectedEmail, Issue } from "../entrypoints/modal/types";
 
 const STORAGE_KEYS = {
   HISTORY: "promptguard_history",

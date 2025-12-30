@@ -3,7 +3,8 @@
  * Bridge between MAIN world and service worker, mounts React modal UI
  */
 import { mountModal } from "./modal/mount";
-import { storageService } from "../services/storage.service";
+import { storageService } from "../services/storageService";
+import { filterDismissedEmails } from "../services/emailService";
 
 export default defineContentScript({
   matches: ["*://chatgpt.com/*", "*://chat.openai.com/*"],
@@ -24,15 +25,7 @@ export default defineContentScript({
 
           if (response.emails.length > 0) {
             const persisted = await storageService.load();
-
-            const now = Date.now();
-            const activeDismissals = persisted.dismissedEmails.filter(
-              (d) => d.dismissedUntil && d.dismissedUntil > now
-            );
-            const dismissedSet = new Set(activeDismissals.map((d) => d.email.toLowerCase()));
-            const activeEmails = response.emails.filter(
-              (email: string) => !dismissedSet.has(email.toLowerCase())
-            );
+            const activeEmails = filterDismissedEmails(response.emails, persisted.dismissedEmails);
 
             if (activeEmails.length === 0) {
               window.postMessage(

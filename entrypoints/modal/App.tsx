@@ -19,7 +19,7 @@ type Props = {
   persistedDismissedEmails: DetectedEmail[];
   onMask: (newIssue: Issue, emailsToMask: string[]) => void;
   onDismiss: (dismissedEmails: DetectedEmail[]) => void;
-  onClose: () => void;
+  onAllowRequest: () => void;
   onCancel: () => void;
 };
 
@@ -30,7 +30,7 @@ function AppContent(props: Props) {
     persistedDismissedEmails,
     onMask,
     onDismiss,
-    onClose,
+    onAllowRequest,
     onCancel,
   } = props;
 
@@ -60,9 +60,9 @@ function AppContent(props: Props) {
 
   useEffect(() => {
     if (hadEmails.current && currentEmails.length === 0) {
-      onClose();
+      onAllowRequest();
     }
-  }, [currentEmails, onClose]);
+  }, [currentEmails, onAllowRequest]);
 
   const handleDismiss = (email: string) => {
     dispatch(dismissEmail(email));

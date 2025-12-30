@@ -76,7 +76,7 @@ export default defineContentScript({
               onDismiss: async (dismissedEmails) => {
                 await storageService.saveDismissedEmails(dismissedEmails);
               },
-              onClose: () => {
+              onAllowRequest: () => {
                 window.postMessage(
                   {
                     type: "PROMPT_GUARD_SCAN_RESULT",

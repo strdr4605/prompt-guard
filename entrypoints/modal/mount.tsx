@@ -8,7 +8,7 @@ type MountOptions = {
   persistedDismissedEmails: DetectedEmail[];
   onMask: (newIssue: Issue, emailsToMask: string[]) => void;
   onDismiss: (dismissedEmails: DetectedEmail[]) => void;
-  onClose: () => void;
+  onAllowRequest: () => void;
   onCancel: () => void;
 };
 
@@ -19,7 +19,7 @@ export function mountModal(options: MountOptions): () => void {
     persistedDismissedEmails,
     onMask,
     onDismiss,
-    onClose,
+    onAllowRequest,
     onCancel,
   } = options;
 
@@ -53,8 +53,8 @@ export function mountModal(options: MountOptions): () => void {
         unmount();
       }}
       onDismiss={onDismiss}
-      onClose={() => {
-        onClose();
+      onAllowRequest={() => {
+        onAllowRequest();
         unmount();
       }}
       onCancel={() => {

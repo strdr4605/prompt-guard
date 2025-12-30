@@ -11,14 +11,10 @@ type MountOptions = {
   onClose: () => void;
 };
 
-export function mountModal({
-  emails,
-  persistedHistory,
-  persistedDismissedEmails,
-  onMask,
-  onDismiss,
-  onClose,
-}: MountOptions): () => void {
+export function mountModal(options: MountOptions): () => void {
+  const { emails, persistedHistory, persistedDismissedEmails, onMask, onDismiss, onClose } =
+    options;
+
   const shadowHost = document.createElement("div");
   shadowHost.id = "prompt-guard-modal";
   document.body.appendChild(shadowHost);

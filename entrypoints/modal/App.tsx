@@ -22,14 +22,10 @@ type Props = {
   onClose: () => void;
 };
 
-function AppContent({
-  initialEmails,
-  persistedHistory,
-  persistedDismissedEmails,
-  onMask,
-  onDismiss,
-  onClose,
-}: Props) {
+function AppContent(props: Props) {
+  const { initialEmails, persistedHistory, persistedDismissedEmails, onMask, onDismiss, onClose } =
+    props;
+
   const dispatch = useAppDispatch();
   const currentEmails = useAppSelector((state) => state.issues.currentEmails);
   const history = useAppSelector((state) => state.issues.history);

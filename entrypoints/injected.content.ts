@@ -9,19 +9,21 @@ export default defineContentScript({
   main() {
     function showToast(message: string) {
       const toast = document.createElement("div");
-      toast.textContent = message;
+      toast.textContent = "🤠 " + message;
       toast.style.cssText = `
         position: fixed;
         bottom: 24px;
         left: 50%;
         transform: translateX(-50%);
-        background: #1a1a1a;
-        color: white;
+        background: #fff8f0;
+        color: #8b1e3f;
         padding: 12px 24px;
         border-radius: 8px;
         font-size: 14px;
+        font-weight: 500;
         z-index: 10001;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #f5b800;
       `;
       document.body.appendChild(toast);
       setTimeout(() => {
@@ -72,16 +74,10 @@ export default defineContentScript({
         }
 
         if (text) {
-          // Use textarea + execCommand as fallback for clipboard
-          const textarea = document.createElement("textarea");
-          textarea.value = text;
-          textarea.style.position = "fixed";
-          textarea.style.opacity = "0";
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand("copy");
-          textarea.remove();
-          showToast("Request cancelled. Prompt copied to clipboard.");
+          navigator.clipboard.writeText(text).then(
+            () => showToast("Request cancelled. Prompt copied to clipboard."),
+            () => showToast("Request cancelled.")
+          );
         } else {
           showToast("Request cancelled.");
         }

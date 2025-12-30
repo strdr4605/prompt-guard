@@ -16,10 +16,11 @@ export type Props = {
   emails: string[];
   onMask: () => void;
   onDismiss: (email: string) => void;
+  onCancel: () => void;
   history: Issue[];
 };
 
-export function Modal({ isOpen, emails, history, onMask, onDismiss }: Props) {
+export function Modal({ isOpen, emails, history, onMask, onDismiss, onCancel }: Props) {
   return (
     <Dialog open={isOpen} onClose={() => {}} className="relative z-[10000]">
       <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
@@ -27,11 +28,31 @@ export function Modal({ isOpen, emails, history, onMask, onDismiss }: Props) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <DialogPanel className="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
           <div className="rounded-t-2xl border-b border-gray-200 bg-lasso-cream px-6 py-4">
-            <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-lasso-brown">
-              <span>🤠</span>
-              PromptGuard Alert
-            </DialogTitle>
-            <p className="mt-1 text-sm text-gray-600">Email addresses detected in your prompt</p>
+            <div className="flex items-start justify-between">
+              <div>
+                <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-lasso-brown">
+                  <span>🤠</span>
+                  PromptGuard Alert
+                </DialogTitle>
+                <p className="mt-1 text-sm text-gray-600">
+                  Email addresses detected in your prompt
+                </p>
+              </div>
+              <button
+                onClick={onCancel}
+                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600"
+                aria-label="Cancel and restore prompt"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <TabGroup>

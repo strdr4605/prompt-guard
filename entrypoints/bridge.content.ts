@@ -87,6 +87,16 @@ export default defineContentScript({
                   "*"
                 );
               },
+              onCancel: () => {
+                window.postMessage(
+                  {
+                    type: "PROMPT_GUARD_SCAN_CANCEL",
+                    requestId,
+                    originalBody: bodyText,
+                  },
+                  "*"
+                );
+              },
             });
           } else {
             window.postMessage(

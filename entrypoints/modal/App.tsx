@@ -20,11 +20,19 @@ type Props = {
   onMask: (newIssue: Issue, emailsToMask: string[]) => void;
   onDismiss: (dismissedEmails: DetectedEmail[]) => void;
   onClose: () => void;
+  onCancel: () => void;
 };
 
 function AppContent(props: Props) {
-  const { initialEmails, persistedHistory, persistedDismissedEmails, onMask, onDismiss, onClose } =
-    props;
+  const {
+    initialEmails,
+    persistedHistory,
+    persistedDismissedEmails,
+    onMask,
+    onDismiss,
+    onClose,
+    onCancel,
+  } = props;
 
   const dispatch = useAppDispatch();
   const currentEmails = useAppSelector((state) => state.issues.currentEmails);
@@ -94,6 +102,7 @@ function AppContent(props: Props) {
       history={history}
       onMask={handleMask}
       onDismiss={handleDismiss}
+      onCancel={onCancel}
     />
   );
 }

@@ -9,11 +9,19 @@ type MountOptions = {
   onMask: (newIssue: Issue, emailsToMask: string[]) => void;
   onDismiss: (dismissedEmails: DetectedEmail[]) => void;
   onClose: () => void;
+  onCancel: () => void;
 };
 
 export function mountModal(options: MountOptions): () => void {
-  const { emails, persistedHistory, persistedDismissedEmails, onMask, onDismiss, onClose } =
-    options;
+  const {
+    emails,
+    persistedHistory,
+    persistedDismissedEmails,
+    onMask,
+    onDismiss,
+    onClose,
+    onCancel,
+  } = options;
 
   const shadowHost = document.createElement("div");
   shadowHost.id = "prompt-guard-modal";
@@ -47,6 +55,10 @@ export function mountModal(options: MountOptions): () => void {
       onDismiss={onDismiss}
       onClose={() => {
         onClose();
+        unmount();
+      }}
+      onCancel={() => {
+        onCancel();
         unmount();
       }}
     />

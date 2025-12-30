@@ -1,49 +1,111 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Provider } from "react-redux";
+import { store } from "./store";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import {
+  setCurrentEmails,
+  dismissEmail,
+  addToHistory,
+  clearCurrentEmails,
+  loadPersistedState,
+} from "./store/issuesSlice";
 import { Modal } from "./components/Modal";
-import type { Issue } from "./types";
+import type { Issue, DetectedEmail } from "./types";
 import "./index.css";
 
-type AppProps = {
-  emails: string[];
-  onMask: () => void;
+type Props = {
+  initialEmails: string[];
+  persistedHistory: Issue[];
+  persistedDismissedEmails: DetectedEmail[];
+  onMask: (newIssue: Issue, emailsToMask: string[]) => void;
+  onDismiss: (dismissedEmails: DetectedEmail[]) => void;
+  onClose: () => void;
 };
 
-export function App({ emails, onMask }: AppProps) {
-  const [isOpen, setIsOpen] = useState(true);
-  const [history, setHistory] = useState<Issue[]>([]);
+function AppContent({
+  initialEmails,
+  persistedHistory,
+  persistedDismissedEmails,
+  onMask,
+  onDismiss,
+  onClose,
+}: Props) {
+  const dispatch = useAppDispatch();
+  const currentEmails = useAppSelector((state) => state.issues.currentEmails);
+  const history = useAppSelector((state) => state.issues.history);
+  const dismissedEmails = useAppSelector((state) => state.issues.dismissedEmails);
+  const initialized = useRef(false);
+  const hadEmails = useRef(false);
 
   useEffect(() => {
-    // TODO: Load history from storage
-  }, []);
+    if (!initialized.current) {
+      initialized.current = true;
+      dispatch(
+        loadPersistedState({ history: persistedHistory, dismissedEmails: persistedDismissedEmails })
+      );
+      dispatch(setCurrentEmails(initialEmails));
+    }
+  }, [dispatch, initialEmails, persistedHistory, persistedDismissedEmails]);
+
+  // Track when emails were shown to distinguish initial empty from all-dismissed
+  useEffect(() => {
+    if (currentEmails.length > 0) {
+      hadEmails.current = true;
+    }
+  }, [currentEmails]);
+
+  useEffect(() => {
+    if (hadEmails.current && currentEmails.length === 0) {
+      onClose();
+    }
+  }, [currentEmails, onClose]);
 
   const handleDismiss = (email: string) => {
-    // TODO: Implement 24h dismiss logic
-    console.log("Dismiss email for 24h:", email);
+    dispatch(dismissEmail(email));
+    const state = store.getState().issues;
+    onDismiss(state.dismissedEmails);
   };
 
   const handleMask = () => {
+    const emailsToMask = [...currentEmails];
+
     const newIssue: Issue = {
       id: crypto.randomUUID(),
-      emails: emails.map((email) => ({ email, detectedAt: Date.now() })),
-      prompt: "", // TODO: Pass prompt from interceptor
+      emails: currentEmails.map((email) => {
+        const dismissed = dismissedEmails.find(
+          (d) => d.email.toLowerCase() === email.toLowerCase()
+        );
+        return {
+          email,
+          detectedAt: Date.now(),
+          dismissedUntil: dismissed?.dismissedUntil,
+        };
+      }),
+      prompt: "",
       timestamp: Date.now(),
       masked: true,
     };
-    setHistory((prev) => [newIssue, ...prev]);
 
-    // TODO: Persist to storage
-
-    setIsOpen(false);
-    onMask();
+    dispatch(addToHistory(newIssue));
+    dispatch(clearCurrentEmails());
+    onMask(newIssue, emailsToMask);
   };
 
   return (
     <Modal
-      isOpen={isOpen}
-      emails={emails}
+      isOpen={currentEmails.length > 0}
+      emails={currentEmails}
       history={history}
       onMask={handleMask}
       onDismiss={handleDismiss}
     />
+  );
+}
+
+export function App(props: Props) {
+  return (
+    <Provider store={store}>
+      <AppContent {...props} />
+    </Provider>
   );
 }

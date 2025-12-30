@@ -20,8 +20,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
+    "@reduxjs/toolkit": "^2.11.2",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-redux": "^9.2.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

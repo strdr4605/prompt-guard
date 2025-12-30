@@ -35,13 +35,17 @@ export default defineBackground(() => {
     if (message.type === "SCAN_FOR_EMAILS") {
       const { requestId, bodyText } = message;
       const emails = detectEmails(bodyText);
-      const anonymizedBody = emails.length > 0 ? anonymizeEmails(bodyText, emails) : bodyText;
-
-      // TODO: Store detection in browser.storage
-
-      sendResponse({ requestId, emails, anonymizedBody });
-      return true; // Keep message channel open for async sendResponse
+      sendResponse({ requestId, emails });
+      return true;
     }
+
+    if (message.type === "ANONYMIZE_EMAILS") {
+      const { bodyText, emailsToAnonymize } = message;
+      const anonymizedBody = anonymizeEmails(bodyText, emailsToAnonymize);
+      sendResponse({ anonymizedBody });
+      return true;
+    }
+
     return false;
   });
 });

@@ -1,7 +1,24 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import type { Issue, DetectedEmail } from "./types";
 
-export function mountModal(emails: string[], onMask: () => void): () => void {
+type MountOptions = {
+  emails: string[];
+  persistedHistory: Issue[];
+  persistedDismissedEmails: DetectedEmail[];
+  onMask: (newIssue: Issue, emailsToMask: string[]) => void;
+  onDismiss: (dismissedEmails: DetectedEmail[]) => void;
+  onClose: () => void;
+};
+
+export function mountModal({
+  emails,
+  persistedHistory,
+  persistedDismissedEmails,
+  onMask,
+  onDismiss,
+  onClose,
+}: MountOptions): () => void {
   const shadowHost = document.createElement("div");
   shadowHost.id = "prompt-guard-modal";
   document.body.appendChild(shadowHost);
@@ -16,11 +33,28 @@ export function mountModal(emails: string[], onMask: () => void): () => void {
   style.textContent = `@import "${cssUrl}";`;
   shadowRoot.appendChild(style);
 
-  const root = createRoot(container);
-  root.render(<App emails={emails} onMask={onMask} />);
-
-  return () => {
+  const unmount = () => {
     root.unmount();
     shadowHost.remove();
   };
+
+  const root = createRoot(container);
+  root.render(
+    <App
+      initialEmails={emails}
+      persistedHistory={persistedHistory}
+      persistedDismissedEmails={persistedDismissedEmails}
+      onMask={(newIssue, emailsToMask) => {
+        onMask(newIssue, emailsToMask);
+        unmount();
+      }}
+      onDismiss={onDismiss}
+      onClose={() => {
+        onClose();
+        unmount();
+      }}
+    />
+  );
+
+  return unmount;
 }

@@ -16,6 +16,15 @@ export default defineContentScript({
       const { type, requestId, bodyText } = event.data || {};
 
       if (type === "PROMPT_GUARD_SCAN_REQUEST") {
+        // Check if extension context is still valid (invalidated after extension reload)
+        if (!browser.runtime?.id) {
+          window.postMessage(
+            { type: "PROMPT_GUARD_SCAN_RESULT", requestId, emails: [], anonymizedBody: bodyText },
+            "*"
+          );
+          return;
+        }
+
         try {
           const response = await browser.runtime.sendMessage({
             type: "SCAN_FOR_EMAILS",
